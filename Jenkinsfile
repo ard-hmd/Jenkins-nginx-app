@@ -46,7 +46,26 @@ pipeline {
                 '''
                 }
             }
+        }
 
+        stage('Deploiement en qa -> Nginx Reverse Proxy'){
+            environment
+            {
+                KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+            }
+            steps {
+                script {
+                sh '''
+                rm -Rf .kube
+                mkdir .kube
+                ls
+                cat $KUBECONFIG > .kube/config
+                cp nginx-chart/values.yaml values.yaml
+                cat values.yaml
+                helm upgrade --install nginx-chart-release ./nginx-chart --values=values.yaml --set servicePorts.castService=8003 --set servicePorts.movieService=8004 --namespace qa
+                '''
+                }
+            }
         }
 
         stage('Deploiement en staging -> Nginx Reverse Proxy'){
@@ -63,7 +82,7 @@ pipeline {
                 cat $KUBECONFIG > .kube/config
                 cp nginx-chart/values.yaml values.yaml
                 cat values.yaml
-                helm upgrade --install nginx-chart-release ./nginx-chart --values=values.yaml --set servicePorts.castService=8003 --set servicePorts.movieService=8004 --namespace staging
+                helm upgrade --install nginx-chart-release ./nginx-chart --values=values.yaml --set servicePorts.castService=8005 --set servicePorts.movieService=8006 --namespace staging
                 '''
                 }
             }
@@ -90,7 +109,7 @@ pipeline {
                 cat $KUBECONFIG > .kube/config
                 cp nginx-chart/values.yaml values.yaml
                 cat values.yaml
-                helm upgrade --install nginx-chart-release ./nginx-chart --values=values.yaml --set servicePorts.castService=8005 --set servicePorts.movieService=8006 --namespace prod
+                helm upgrade --install nginx-chart-release ./nginx-chart --values=values.yaml --set servicePorts.castService=8007 --set servicePorts.movieService=8008 --namespace prod
                 '''
                 }
             }
