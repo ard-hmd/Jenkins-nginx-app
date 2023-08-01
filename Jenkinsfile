@@ -9,7 +9,7 @@ pipeline {
                 script {
                 sh '''
                 docker rm -f nginx
-                docker run -d --name nginx --network monReseau -p 8087:8087 -v nginx-app/nginx_config.conf:/etc/nginx/conf.d/default.conf nginx:latest
+                docker run -d --name nginx --network monReseau -p 8087:8087 -v ./nginx-app/nginx_config.conf:/etc/nginx/conf.d/default.conf nginx:latest
                 sleep 10
                 '''
                 }
